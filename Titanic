@@ -1,0 +1,51 @@
+import pandas as pd
+import plotly.express as px
+
+# loaded the Titanic dataset
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+titanic_df = pd.read_csv(url)
+
+# survival count by gender
+gender_survival = titanic_df.groupby(['Sex', 'Survived']).size().reset_index(name='Count')
+fig_gender = px.bar(gender_survival, x='Sex', y='Count', color='Survived', barmode='group',
+                     labels={'Survived': 'Survival', 'Count': 'Passenger Count', 'Sex': 'Gender'},
+                     title='Survival Count by Gender')
+fig_gender.show()
+
+#  survival count by passenger class
+class_survival = titanic_df.groupby(['Pclass', 'Survived']).size().reset_index(name='Count')
+fig_class = px.bar(class_survival, x='Pclass', y='Count', color='Survived', barmode='group',
+                   labels={'Survived': 'Survival', 'Count': 'Passenger Count', 'Pclass': 'Passenger Class'},
+                   title='Survival Count by Passenger Class')
+fig_class.show()
+
+#  survival count by age group
+titanic_df['AgeGroup'] = pd.cut(titanic_df['Age'], bins=[0, 18, 30, 50, 100], labels=['<18', '18-30', '31-50', '51+'])
+age_survival = titanic_df.groupby(['AgeGroup', 'Survived']).size().reset_index(name='Count')
+fig_age = px.bar(age_survival, x='AgeGroup', y='Count', color='Survived', barmode='group',
+                 labels={'Survived': 'Survival', 'Count': 'Passenger Count', 'AgeGroup': 'Age Group'},
+                 title='Survival Count by Age Group')
+fig_age.show()
+
+#  survival count by port they left off of
+embarked_survival = titanic_df.groupby(['Embarked', 'Survived']).size().reset_index(name='Count')
+fig_embarked = px.bar(embarked_survival, x='Embarked', y='Count', color='Survived', barmode='group',
+                      labels={'Survived': 'Survival', 'Count': 'Passenger Count', 'Embarked': 'Embarked Port'},
+                      title='Survival Count by Embarked Port')
+fig_embarked.show()
+
+# calculated survival rates by passenger class
+survival_rates_by_class = titanic_df.groupby('Pclass')['Survived'].mean().reset_index()
+survival_rates_by_class['Survived'] *= 100  # Convert to percentage
+fig_class_survival_rate = px.bar(survival_rates_by_class, x='Pclass', y='Survived', 
+                                  labels={'Survived': 'Survival Rate (%)', 'Pclass': 'Passenger Class'},
+                                  title='Survival Rate by Passenger Class')
+fig_class_survival_rate.show()
+
+# calculated survival rates by gender
+survival_rates_by_gender = titanic_df.groupby('Sex')['Survived'].mean().reset_index()
+survival_rates_by_gender['Survived'] *= 100  # Convert to percentage
+fig_gender_survival_rate = px.bar(survival_rates_by_gender, x='Sex', y='Survived', 
+                                   labels={'Survived': 'Survival Rate (%)', 'Sex': 'Gender'},
+                                   title='Survival Rate by Gender')
+fig_gender_survival_rate.show()
